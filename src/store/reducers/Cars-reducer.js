@@ -233,6 +233,42 @@ const carsSlice = createSlice({
         );
       }
     },
+    priceToLow: (state) => {
+      if (state.filteredCars.length === 0) {
+        state.filteredCars = state.cars;
+      }
+      state.filteredCars.sort((a, b) => {
+        if (a.price > b.price) {
+          return 1;
+        }
+        if (a.price < b.price) {
+          return -1;
+        }
+        return 0;
+      });
+    },
+    priceToHigh: (state) => {
+      if (state.filteredCars.length === 0) {
+        state.filteredCars = state.cars;
+      }
+      state.filteredCars.sort((a, b) => {
+        if (a.price > b.price) {
+          return -1;
+        }
+        if (a.price < b.price) {
+          return 1;
+        }
+        return 0;
+      });
+    },
+    search: (state, action) => {
+      if (state.filteredCars.length === 0) {
+        state.filteredCars = state.cars;
+      }
+      state.filteredCars = state.filteredCars.filter(
+        (car) => car.model === action.payload
+      );
+    },
   },
 });
 
@@ -243,10 +279,12 @@ export const {
   filterByBodyType,
   filterByModel,
   filterByPrice,
+  priceToLow,
+  priceToHigh,
+  search,
 } = carsSlice.actions;
 
 export const selectCars = (state) => state.cars.cars;
 export const selectFilteredCars = (state) => state.cars.filteredCars;
-export const selectError = (state) => state.cars.error;
 
 export default carsSlice.reducer;

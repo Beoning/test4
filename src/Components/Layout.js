@@ -1,6 +1,7 @@
 import {
   AppBar,
   Button,
+  ButtonGroup,
   Container,
   Drawer,
   FormControl,
@@ -13,9 +14,13 @@ import {
   Radio,
   RadioGroup,
   Select,
+  TextField,
   Toolbar,
   Typography,
 } from "@material-ui/core";
+import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
+import ArrowDropUpIcon from "@material-ui/icons/ArrowDropUp";
+import { Autocomplete } from "@material-ui/lab";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -27,6 +32,9 @@ import {
   filterByBodyType,
   filterByModel,
   filterByPrice,
+  priceToLow,
+  priceToHigh,
+  search,
 } from "../store/reducers/Cars-reducer";
 import Car from "./Car";
 
@@ -88,6 +96,15 @@ const useStyles = makeStyles({
     display: "flex",
     justifyContent: "space-around",
   },
+  search: {
+    display: "flex",
+    justifyContent: "space-around",
+    alignItems: "center",
+  },
+  align: {
+    display: "flex",
+    justifyContent: "center",
+  },
 });
 
 const Layout = () => {
@@ -103,13 +120,15 @@ const Layout = () => {
   const [bodyType, setBodyType] = useState("Все");
   const [price, setPrice] = useState("Любая");
 
+  const [inputValue, setInputValue] = useState("");
+
   const handleSubmit = (e) => {
     e.preventDefault();
     dispatch(filterByBrand(brand));
+    dispatch(filterByModel({ brand, model }));
     dispatch(filterByYear(year));
     dispatch(filterByFuel(fuel));
     dispatch(filterByBodyType(bodyType));
-    dispatch(filterByModel({ brand, model }));
     dispatch(filterByPrice(price));
   };
   return (
@@ -136,6 +155,7 @@ const Layout = () => {
             autoComplete="off"
           >
             {/* Фильтр по бренду */}
+
             <div className={classes.self}>
               <div className={classes.wrapper}>
                 <div>
@@ -162,6 +182,8 @@ const Layout = () => {
                   </Select>
                 </div>
 
+                {/* Фильтр по модели */}
+
                 <div>
                   <InputLabel id="">Модель</InputLabel>
                   <Select
@@ -185,7 +207,9 @@ const Layout = () => {
                       cars
                         .filter((car) => car.brand === brand)
                         .map((elem) => (
-                          <MenuItem value={elem.model}>{elem.model}</MenuItem>
+                          <MenuItem value={elem.model} key={elem.value}>
+                            {elem.model}
+                          </MenuItem>
                         ))
                     )}
                   </Select>
@@ -194,6 +218,7 @@ const Layout = () => {
             </div>
 
             {/* Фильтр по году выпуска */}
+
             <FormControl className={classes.self}>
               <FormLabel>Год выпуска</FormLabel>
               <RadioGroup
@@ -203,19 +228,9 @@ const Layout = () => {
                 <div className={classes.groupContainer}>
                   <FormControlLabel value="" control={<Radio />} label="Все" />
                   <FormControlLabel
-                    value="2017"
-                    control={<Radio />}
-                    label="2017"
-                  />
-                  <FormControlLabel
                     value="2021"
                     control={<Radio />}
                     label="2021"
-                  />
-                  <FormControlLabel
-                    value="2013"
-                    control={<Radio />}
-                    label="2013"
                   />
                   <FormControlLabel
                     value="2019"
@@ -223,14 +238,30 @@ const Layout = () => {
                     label="2019"
                   />
                   <FormControlLabel
+                    value="2018"
+                    control={<Radio />}
+                    label="2018"
+                  />
+                  <FormControlLabel
+                    value="2017"
+                    control={<Radio />}
+                    label="2017"
+                  />
+                  <FormControlLabel
+                    value="2016"
+                    control={<Radio />}
+                    label="2016"
+                  />
+                  <FormControlLabel
+                    value="2013"
+                    control={<Radio />}
+                    label="2013"
+                  />
+
+                  <FormControlLabel
                     value="2012"
                     control={<Radio />}
                     label="2012"
-                  />
-                  <FormControlLabel
-                    value={2016}
-                    control={<Radio />}
-                    label="2016"
                   />
                 </div>
               </RadioGroup>
@@ -342,13 +373,53 @@ const Layout = () => {
             </Button>
           </form>
         </Drawer>
-        <Grid className={classes.girdContainer} container spacing={3}>
-          {filteredCars.length === 0
-            ? cars.map((car) => <Car info={car} key={car.id} />)
-            : filteredCars.map((filteredCar) => (
-                <Car info={filteredCar} key={filteredCar.id} />
-              ))}
-        </Grid>
+
+        {/* Главный контент */}
+
+        <div>
+          <div className={classes.search} style={{ width: 800 }}>
+            <Autocomplete
+              inputValue={inputValue}
+              onInputChange={(event, newInputValue) => {
+                setInputValue(newInputValue);
+                dispatch(search(newInputValue));
+              }}
+              options={cars.map((car) => car.model)}
+              renderInput={(params) => (
+                <TextField
+                  style={{ width: 300 }}
+                  {...params}
+                  label="Поиск по модели"
+                  margin="normal"
+                  variant="outlined"
+                />
+              )}
+            />
+            <ButtonGroup
+              color="secondary"
+              aria-label="outlined primary button group"
+            >
+              <Button onClick={() => dispatch(priceToLow())}>
+                По возрастанию
+                <ArrowDropUpIcon />
+              </Button>
+              <Button onClick={() => dispatch(priceToHigh())}>
+                По убыванию
+                <ArrowDropDownIcon />
+              </Button>
+            </ButtonGroup>
+          </div>
+
+          {/* Тачки */}
+
+          <Grid className={classes.girdContainer} container spacing={3}>
+            {filteredCars.length === 0
+              ? cars.map((car) => <Car info={car} key={car.id} />)
+              : filteredCars.map((filteredCar) => (
+                  <Car info={filteredCar} key={filteredCar.id} />
+                ))}
+          </Grid>
+        </div>
       </div>
     </Container>
   );
