@@ -207,6 +207,9 @@ const carsSlice = createSlice({
           (car) => car.model === action.payload.model
         );
       }
+      if (action.payload.brand === "Все" && action.payload.model === "Все") {
+        state.filteredCars = state.cars;
+      }
     },
     filterByPrice: (state, action) => {
       if (action.payload === "Любая") {
