@@ -149,6 +149,9 @@ const carsSlice = createSlice({
     filteredCars: [],
   },
   reducers: {
+    initialize: (state) => {
+      state.filteredCars = state.cars;
+    },
     filterByBrand: (state, action) => {
       if (action.payload === "Все") {
         state.filteredCars = state.cars;
@@ -276,6 +279,7 @@ const carsSlice = createSlice({
 });
 
 export const {
+  initialize,
   filterByYear,
   filterByBrand,
   filterByFuel,

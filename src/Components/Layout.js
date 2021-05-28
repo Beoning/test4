@@ -21,7 +21,7 @@ import {
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import ArrowDropUpIcon from "@material-ui/icons/ArrowDropUp";
 import { Autocomplete } from "@material-ui/lab";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   filterByBrand,
@@ -35,6 +35,7 @@ import {
   priceToLow,
   priceToHigh,
   search,
+  initialize,
 } from "../store/reducers/Cars-reducer";
 import Car from "./Car";
 
@@ -131,6 +132,7 @@ const Layout = () => {
     dispatch(filterByBodyType(bodyType));
     dispatch(filterByPrice(price));
   };
+  useEffect(() => dispatch(initialize()), [dispatch]);
   return (
     <Container>
       <AppBar elevation={0}>
@@ -413,11 +415,17 @@ const Layout = () => {
           {/* Тачки */}
 
           <Grid className={classes.girdContainer} container spacing={3}>
-            {filteredCars.length === 0
-              ? cars.map((car) => <Car info={car} key={car.id} />)
-              : filteredCars.map((filteredCar) => (
-                  <Car info={filteredCar} key={filteredCar.id} />
-                ))}
+            {filteredCars.length === 0 ? (
+              <Grid className={classes.align} item xs={12}>
+                <Typography variant="h6">
+                  Нет моделей по заданным фильтрам
+                </Typography>
+              </Grid>
+            ) : (
+              filteredCars.map((filteredCar) => (
+                <Car info={filteredCar} key={filteredCar.id} />
+              ))
+            )}
           </Grid>
         </div>
       </div>
