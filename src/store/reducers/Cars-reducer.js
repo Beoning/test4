@@ -268,7 +268,14 @@ const carsSlice = createSlice({
       });
     },
     search: (state, action) => {
-      if (state.filteredCars.length === 0 || action.payload === "") {
+      state.filteredCars = state.cars;
+      if (
+        action.payload !== "" &&
+        state.filteredCars.filter((car) => car.model === action.payload)
+          .length === 0
+      ) {
+        state.filteredCars = [];
+      } else if (action.payload === "") {
         state.filteredCars = state.cars;
       } else {
         state.filteredCars = state.filteredCars.filter(
