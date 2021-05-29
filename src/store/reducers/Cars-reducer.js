@@ -270,10 +270,11 @@ const carsSlice = createSlice({
     search: (state, action) => {
       if (state.filteredCars.length === 0 || action.payload === "") {
         state.filteredCars = state.cars;
+      } else {
+        state.filteredCars = state.filteredCars.filter(
+          (car) => car.model === action.payload
+        );
       }
-      state.filteredCars = state.filteredCars.filter(
-        (car) => car.model === action.payload
-      );
     },
   },
 });
